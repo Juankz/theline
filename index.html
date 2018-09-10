@@ -1,0 +1,169 @@
+<html>
+        <head>
+            <script src="aframe.min.js"></script>
+            <script>
+                // This systems creates all the elements needed to play simple audio waves using an oscillator
+                AFRAME.registerSystem('programaticsound',{
+                    schema:{
+                        context:{default: new AudioContext()},
+                        gain: {default: '1.0'},
+                        duration: {default: '0.5'},
+                        frequencies:{
+                            default: {   
+                                'C': 349.2,
+                                'C#': 370.0,
+                                'D': 392.0,
+                                'D#': 415.3,
+                                'E': 440.0,
+                                'F': 466.2,
+                                'F#': 493.9,
+                                'G': 523.3,
+                                'G#': 554.4,
+                                'A': 587.3,
+                                'A#': 622.3,
+                                'B': 659.3
+                            }
+                        }
+                    },
+
+                    playSound: function(note) {
+                        var context = this.data.context
+                        var compressor =  this.data.compressor
+                        var frequencies = this.data.frequencies
+                        
+                        // creates oscillator to create the actual sound with the choosen note frequency
+                        var o = context.createOscillator()
+                        o.frequency.value = frequencies[note]
+
+                        var g = context.createGain() // creates gain to gracefully reduce the sound through time
+
+                        o.connect(g) //Connects oscillator output to gain input
+
+                        g.connect(context.destination) //Conect gain module to the output
+
+                        o.start(context.currentTime) //Start playing
+
+                        // Reduces exponentially the sound, this gives a reallystic feeling
+                        // as the produced sound decreases the same way the sound of a pulled
+                        // guitar string would decrease.
+                        g.gain.setTargetAtTime(
+                            0, context.currentTime, 0.25
+                        )
+                    },
+                }),
+
+                AFRAME.registerComponent('programaticsound',{
+                    schema:{type: 'string', default: 'C'},
+
+                    playSound: function(){
+                        this.system.playSound(this.data)
+                    }
+                })
+
+                AFRAME.registerComponent('movement',{
+                    schema:{
+                        type:'vec3'
+                    },
+                    tick: function () {
+                        var entity = this.el
+                        var n = this.el.getAttribute('movement')
+                        var p = this.el.getAttribute('position')
+                        var target = new THREE.Vector3(n.x,n.y - 2,n.z)
+                        var dir = target.clone().sub(p).normalize()
+                        if (p.distanceTo(target)>0.1){
+                            var speed = 0.1
+                            this.el.object3D.position.add(dir.multiplyScalar(speed))
+                        }
+                    },
+                    update: function(oldData){
+                        this.el.setAttribute('movement',this.data)
+                    }
+                })
+
+                AFRAME.registerComponent('teleporter',{
+                    schema:{
+                        active: {default: true}
+                    },
+                    init: function () {
+                        var self = this
+                        this.el.addEventListener('click',function(){
+                            if (self.data.active){
+                                var thisEntity = self.el
+                                // Plays a sound
+                                thisEntity.components.programaticsound.playSound()
+
+                                // Adds this position to the camera target position
+                                var cam = document.getElementById("cameraWrapper")
+                                var p = thisEntity.getAttribute('position')
+                                cam.setAttribute('movement',p.x+' '+p.y+' '+p.z)
+
+                                // Makes element inactive so this action is executed only once
+                                AFRAME.utils.entity.setComponentProperty(thisEntity, 'teleporter.active',false);
+
+                                // Add fancy animations to give feedback
+                                var fadeAnim = document.createElement('a-animation')
+                                fadeAnim.setAttribute('mixin','fade-away')
+                                var scaleAnim = document.createElement('a-animation')
+                                scaleAnim.setAttribute('mixin','scale-away')
+                                thisEntity.appendChild(scaleAnim)
+                                thisEntity.appendChild(fadeAnim)
+                            }                            
+                        })
+                    },
+                    update: function () {},
+                    tick: function () {},
+                    remove: function () {},
+                })
+
+            </script>
+        </head>
+<body> 
+    <a-scene background="color: #eee" light="defaultLightsEnabled: true" fog="type: linear; far: 25; color: #eee;">
+        <a-assets>
+            <img id="tile" src="tile3.png">
+            <img id="tile2" src="tile.png">
+            <!-- Mixins -->
+            <a-mixin id="teleporter" teleporter programaticsound material="color: #b000b0; transparent: false; opacity: 1"></a-mixin>
+            <a-mixin id="teleporter-anim"
+                attribute="rotation"
+                dur="4000"
+                from="0 0 0"
+                easing="linear"
+                to="0 360 180"
+                repeat="indefinite">
+            </a-mixin>
+            <a-mixin id="scale-away" attribute="scale" dur="500" from="1 1 1" to="1.2 1.2 1.2"></a-mixin>
+            <a-mixin id="fade-away" attribute="opacity" dur="1000" from="1" to="0"></a-mixin>
+        </a-assets>
+        <!-- camera -->
+        <a-entity id="cameraWrapper" movement="0 3 0" position="0 2 0">
+            <a-entity camera="far: 35" look-controls wasd-controls>
+                <a-entity cursor="fuse: false; fuseTimeout: 1000" position="0 0 -2" geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.015" material="color: black; shader: flat;"></a-entity>
+            </a-entity>
+        </a-entity>
+
+        <!-- level -->
+        <a-plane position="0 0 -25" material="color: #ddd; src: #tile; repeat: 100 100; transparent: false;" rotation="-90 0 0" width="100" height="100"></a-plane>
+        <a-box mixin="teleporter" position="0 3 -8">
+            <a-animation mixin="teleporter-anim"></a-animation>
+        </a-box>
+        <a-box mixin="teleporter" position="1 9 -26">
+            <a-animation mixin="teleporter-anim"></a-animation>
+        </a-box>
+
+        <!-- <a-box teleporter programaticsound="C" position="0 0.5 -15" material="color: white; src: #tile2; transparent: false"></a-box>
+        <a-box teleporter programaticsound="D" position="0 6 -26" material="color: white; src: #tile2; transparent: false"></a-box> -->
+        <!-- <a-box teleporter position="0 6 -33" material="color: white; src: #tile2; transparent: false"></a-box> -->
+        <!-- <a-box position="0 6 -31" material="color: yellow"></a-box> -->
+
+        <a-box position="0 2.5 -30" height="5" width="50" depth="10" material="color: white; src: #tile; repeat: 50 10;transparent: false"></a-box>
+        <a-box height="5" width="2" position="0 7 -33.5" material="src: #tile; repeat: 2 5">
+            <a-plane position="0 0.5 0.51" color="white" width="1.8" height="3.8">
+                    <a-entity background="color: gray" text="align: center; width: 1.8; height: 2.8; wrapCount: 10; font: exo2bold; color: black; value: Isn't it amazing when you discover you can do much more than you ever imagined?" position="0 0 0.1" material="fog: true;"></a-entity>
+            </a-plane>
+        </a-box>
+        <a-cylinder position="0 0.5 -48" radius="4"></a-cylinder>
+
+    </a-scene>
+</body>
+</html>
