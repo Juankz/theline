@@ -18,17 +18,14 @@ AFRAME.registerComponent('movement',{
         var p = this.el.getAttribute('position')
         var target = new THREE.Vector3(n.x,n.y,n.z)
         var dir = target.clone().sub(p).normalize()
-        if (p.distanceTo(target)>0.1){
-            var speed = this.data.speed * timeDelta*0.001
+        var speed = this.data.speed * timeDelta*0.001
+        if (p.distanceTo(target)>speed){
             this.el.object3D.position.add(dir.multiplyScalar(speed))
         }else if(this.moving){
             thisEntity.emit('camerareachedtarget','reached'+this.targetId)
             this.moving = false
         }
     },
-    // update: function(oldData){
-    //     AFRAME.utils.entity.setComponentProperty(this.el, 'movement.target',this.data);
-    // },
 
     init: function(){
         this.targetId = 'none'
