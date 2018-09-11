@@ -20,13 +20,13 @@ AFRAME.registerSystem('animator',{
 
     fromComponentToSystem: function() {
         console.log('this is a function called from a component')
-        this.entities.forEach(element => {
+        this.entities.forEach(function(element) {
             element.components.animator.fromSystemToComponent();
         });
     },
 
     animateNext: function(trigger) {
-        this.entities.forEach(element => {
+        this.entities.forEach(function(element) {
             var animator = element.components.animator
             if(animator.data.conditionAppear == trigger){
                 animator.appear()

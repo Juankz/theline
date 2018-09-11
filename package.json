@@ -1,0 +1,27 @@
+{
+  "name": "balance",
+  "version": "1.0.0",
+  "description": "Game for the competition js13k 2018. Category: Webvr",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "js13k",
+    "aframe",
+    "game",
+    "VR",
+    "XR"
+  ],
+  "author": "Juan Velandia",
+  "license": "MIT",
+  "dependencies": {
+    "grunt": "^1.0.3"
+  },
+  "devDependencies": {
+    "grunt-concurrent": "^2.3.1",
+    "grunt-contrib-htmlmin": "^3.0.0",
+    "grunt-contrib-imagemin": "^2.0.1",
+    "grunt-contrib-uglify": "^4.0.0"
+  }
+}
