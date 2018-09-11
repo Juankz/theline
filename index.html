@@ -1,6 +1,7 @@
 <html>
         <head>
             <script src="aframe.min.js"></script>
+            <!-- <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script> -->
             <script src="systems.js"></script>
             <script src="components.js"></script>
         </head>
@@ -10,7 +11,8 @@
             <img id="tile" src="tile3.png">
             <img id="tile2" src="tile.png">
             <!-- Mixins -->
-            <a-mixin id="teleporter" teleporter programaticsound animator material="color: #b000b0; transparent: false; opacity: 0"></a-mixin>
+            <a-mixin id="teleporter" teleporter programaticsound animator material="color: #b000b0; opacity: 0"></a-mixin>
+            <a-mixin id="target-cell" teleporter="targetId: powerCell;" material="color: yellow";></a-mixin>
             <a-mixin id="teleporter-anim"
                 attribute="rotation"
                 dur="4000"
@@ -23,11 +25,12 @@
             <a-mixin id="fade-away" attribute="opacity" dur="1000" from="1" to="0"></a-mixin>
             <a-mixin id="fade-text" attribute="text.opacity" dur="1000" from="1" to="0" delay="0"></a-mixin>
             <a-mixin id="show-up" attribute="position" dur="1000" delay="0"></a-mixin>
-            <a-mixin id="fade-in" attribute="opacity" dur="1000" from="0" to="1" delay="0"></a-mixin>            
+            <a-mixin id="fade-in" attribute="opacity" dur="1000" from="0" to="1" delay="0"></a-mixin>    
         </a-assets>
 
         <!-- camera -->
-        <a-entity id="cameraWrapper" movement="0 3 0" position="0 2 0" animator="conditionAppear: none; conditionDisappear: none">
+        <a-entity id="cameraWrapper" movement="target: 0 2 0" position="0 2 0" animator="conditionAppear: none; conditionDisappear: none">
+        <!-- <a-entity id="cameraWrapper" movement="0 9 -26" position="0 7 -26" animator="conditionAppear: none; conditionDisappear: none"> -->
             <a-entity camera="far: 35" look-controls wasd-controls>
                 <a-entity cursor="fuse: false; fuseTimeout: 1000" position="0 0 -2" geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.015" material="color: black; shader: flat;"></a-entity>
             </a-entity>
@@ -35,10 +38,10 @@
 
         <!-- level -->
         <a-plane position="0 0 -25" material="color: #ddd; src: #tile; repeat: 100 100; transparent: false;" rotation="-90 0 0" width="100" height="100"></a-plane>
-        <a-box mixin="teleporter" position="0 3 -8">
+        <a-box mixin="teleporter" position="0 2 -9">
             <a-animation mixin="teleporter-anim"></a-animation>
         </a-box>
-        <a-box mixin="teleporter" position="1 9 -26">
+        <a-box mixin="teleporter" position="1 8 -26">
             <a-animation mixin="teleporter-anim"></a-animation>
         </a-box>
 
@@ -48,16 +51,25 @@
         <!-- <a-box position="0 6 -31" material="color: yellow"></a-box> -->
 
         <a-box position="0 2.5 -30" height="5" width="50" depth="10" material="color: white; src: #tile; repeat: 50 10;transparent: false"></a-box>
-        <a-box animator="conditionAppear: reachedtel1;" height="5" width="2" position="0 7 -33.5" material="src: #tile; repeat: 2 5;" opacity="0">
+        <a-box animator="conditionAppear: reachedtel1;" height="5" width="2" position="-2 7 -33.5" material="src: #tile; repeat: 2 5;" opacity="0">
             <a-plane animator="conditionAppear: reachedtel1;" position="0 0.5 0.51" color="white" width="1.8" height="3.8" opacity="0">
                     <a-entity animator="conditionAppear: reachedtel1;" text="align: center; width: 1.8; height: 2.8; wrapCount: 10; font: exo2bold; color: black; opacity: 0; value: Isn't it amazing when you discover you can do much more than you ever imagined?" position="0 0 0.1"></a-entity>
             </a-plane>
         </a-box>
-        <!-- <a-box animator height="5" width="2" position="0 2.5 -8" material="src: #tile; repeat: 2 5">
-            <a-plane animator position="0 0.5 0.51" color="white" width="1.8" height="3.8">
-                    <a-entity animator text="align: center; width: 1.8; height: 2.8; wrapCount: 10; font: exo2bold; color: black; value: Isn't it amazing when you discover you can do much more than you ever imagined?" position="0 0 0.1"></a-entity>
-            </a-plane>
-        </a-box> -->
+
+        <a-sphere id="powerCell" animator="" movement="target: -3 8 -60; speed: 20" radius="0.5" position="3 7 -33.25" color="yellow"></a-sphere>
+
+        <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel1" position="3 8 -33.25" opacity="0">
+            <a-animation mixin="teleporter-anim"></a-animation>
+        </a-box>
+
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel2" position="12 9 -33.25" opacity="0">
+            <a-animation mixin="teleporter-anim"></a-animation>
+        </a-box>
+
+
+
+
         <a-cylinder position="0 0.5 -48" radius="4"></a-cylinder>
 
     </a-scene>

@@ -2,35 +2,36 @@ AFRAME.registerComponent('programaticsound',{
     schema:{type: 'string', default: 'C'},
 
     playSound: function(){
-        this.system.playSound(this.data)
+        this.system.playRandomSound()
     }
 })
 
 // makes the camera (actually the cameraWrapper) move from the actual position to a target position
 AFRAME.registerComponent('movement',{
     schema:{
-        type:'vec3'
+        target:{type:'vec3'},
+        speed: {type: 'number', default: 4}
     },
-    tick: function () {
+    tick: function (time, timeDelta) {
         var thisEntity = this.el
-        var n = this.el.getAttribute('movement')
+        var n = this.data.target
         var p = this.el.getAttribute('position')
-        var target = new THREE.Vector3(n.x,n.y - 2,n.z)
+        var target = new THREE.Vector3(n.x,n.y,n.z)
         var dir = target.clone().sub(p).normalize()
         if (p.distanceTo(target)>0.1){
-            var speed = 0.1
+            var speed = this.data.speed * timeDelta*0.001
             this.el.object3D.position.add(dir.multiplyScalar(speed))
         }else if(this.moving){
-            thisEntity.emit('camerareachedtarget','reached'+this.target)
+            thisEntity.emit('camerareachedtarget','reached'+this.targetId)
             this.moving = false
         }
     },
-    update: function(oldData){
-        this.el.setAttribute('movement',this.data)
-    },
+    // update: function(oldData){
+    //     AFRAME.utils.entity.setComponentProperty(this.el, 'movement.target',this.data);
+    // },
 
     init: function(){
-        this.target = 'none'
+        this.targetId = 'none'
         this.moving = false
         this.el.addEventListener('teleporteractive',function(e){
             console.log(e.msg)
@@ -41,7 +42,8 @@ AFRAME.registerComponent('movement',{
 // Assigns a new target position to the movement component + fancy things
 AFRAME.registerComponent('teleporter',{
     schema:{
-        current: {default: false}
+        current: {default: false},
+        targetId: {type: 'string', default: 'cameraWrapper'} // cameraWrapper, powerCell
     },
     init: function () {
         this.system.registerMe(this.el)
@@ -56,10 +58,11 @@ AFRAME.registerComponent('teleporter',{
                 thisEntity.components.programaticsound.playSound()
 
                 // Adds this position to the camera target position
-                var cam = document.getElementById("cameraWrapper")
+                var cam = document.getElementById(self.data.targetId)
                 var p = thisEntity.getAttribute('position')
-                cam.setAttribute('movement',p.x+' '+p.y+' '+p.z)
-                cam.components.movement.target = id
+                AFRAME.utils.entity.setComponentProperty(cam, 'movement.target',p.x+' '+p.y+' '+p.z);
+                // cam.setAttribute('movement.target',p.x+' '+p.y+' '+p.z)
+                cam.components.movement.targetId = id
                 cam.components.movement.moving = true
 
                 // Marks entity as current so this action is executed only once
@@ -110,6 +113,7 @@ AFRAME.registerComponent('animator', {
         })
 
         this.el.addEventListener('camerareachedtarget',function(ev){
+            console.log('camerareachedtarget: '+ev.detail)
             self.system.animateNext(ev.detail)
         })
 
