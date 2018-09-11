@@ -65,11 +65,11 @@ AFRAME.registerSystem('programaticsound',{
 
     init: function() {
         this.currentNote = 0
+        this.frequenciesArray = ['C','D','E','F','G','A','B']
     },
 
     playSound: function(note) {
         var context = this.data.context
-        var compressor =  this.data.compressor
         var frequencies = this.data.frequencies
         
         // creates oscillator to create the actual sound with the choosen note frequency
@@ -91,6 +91,11 @@ AFRAME.registerSystem('programaticsound',{
             0, context.currentTime, 0.25
         )
     },
+
+    playRandomSound(){
+        var randomNote = this.frequenciesArray[Math.floor(Math.random()*this.frequenciesArray.length)]
+        this.playSound(randomNote)
+    }
 }),
 
 
