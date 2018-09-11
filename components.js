@@ -46,6 +46,11 @@ AFRAME.registerComponent('teleporter',{
         this.system.registerMe(this.el)
         var self = this
 
+        //Adds animation
+        var teleporterAnimation = document.createElement('a-animation')
+        teleporterAnimation.setAttribute('mixin','teleporter-anim')
+        this.el.appendChild(teleporterAnimation)
+
         // On clicked
         this.el.addEventListener('click',function(){
             if (!self.data.current){
