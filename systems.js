@@ -92,7 +92,7 @@ AFRAME.registerSystem('programaticsound',{
         )
     },
 
-    playRandomSound(){
+    playRandomSound: function (){
         var randomNote = this.frequenciesArray[Math.floor(Math.random()*this.frequenciesArray.length)]
         this.playSound(randomNote)
     }
