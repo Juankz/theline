@@ -31,11 +31,22 @@ module.exports = function(grunt) {
                 'dist/tile3.png': 'tile3.png',
             }]
         }
+    },
+    compress: {
+        dist: {
+            options: {
+                archive: 'balance.zip'
+            },
+            files: [
+                {src: ['dist/**'], dest: '/'}
+            ]
+        }
     }
     });
 
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
-    grunt.registerTask('default', ['htmlmin','uglify','imagemin']);
+    grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.registerTask('default', ['htmlmin','uglify','imagemin','compress']);
 }
