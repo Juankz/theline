@@ -1,0 +1,4 @@
+aframe.min.js
+dist/
+node_modules/
+.tmp/
