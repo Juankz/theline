@@ -2,6 +2,10 @@ AFRAME.registerComponent('programaticsound',{
     schema:{type: 'string', default: 'C'},
 
     playSound: function(){
+        this.system.playSound(this.data)
+    },
+
+    playRandomSound: function(){
         this.system.playRandomSound()
     }
 })
@@ -45,19 +49,25 @@ AFRAME.registerComponent('teleporter',{
     init: function () {
         this.system.registerMe(this.el)
         var self = this
+        this.active = false
 
         //Adds animation
         var teleporterAnimation = document.createElement('a-animation')
         teleporterAnimation.setAttribute('mixin','teleporter-anim')
         this.el.appendChild(teleporterAnimation)
 
+        //Make active when appears
+        this.el.addEventListener('appeared',function(){
+            self.active = true
+        })
+
         // On clicked
         this.el.addEventListener('click',function(){
-            if (!self.data.current){
+            if (!self.data.current && self.active){
                 var thisEntity = self.el
                 var id = self.system.getId(thisEntity)
                 // Plays a sound
-                thisEntity.components.programaticsound.playSound()
+                thisEntity.components.programaticsound.playRandomSound()
 
                 // Adds this position to the camera target position
                 var cam = document.getElementById(self.data.targetId)
@@ -115,7 +125,7 @@ AFRAME.registerComponent('animator', {
         })
 
         this.el.addEventListener('camerareachedtarget',function(ev){
-            console.log('camerareachedtarget: '+ev.detail)
+            // console.log('camerareachedtarget: '+ev.detail)
             self.system.animateNext(ev.detail)
         })
 
@@ -141,6 +151,7 @@ AFRAME.registerComponent('animator', {
         positionAnim.setAttribute('to',AFRAME.utils.coordinates.stringify(toPos))
         thisEntity.appendChild(positionAnim)
         thisEntity.appendChild(fadeAnim)
+        thisEntity.emit('appeared')
 
     },
 
@@ -161,10 +172,107 @@ AFRAME.registerComponent('animator', {
         positionAnim.setAttribute('to',AFRAME.utils.coordinates.stringify(toPos))
         thisEntity.appendChild(positionAnim)
         thisEntity.appendChild(fadeAnim)
+        thisEntity.emit('disappeared')
     },
 
 
     fromSystemToComponent: function() {
         console.log('this function is called from the system')
+    }
+})
+
+AFRAME.registerComponent('door',{
+    schema: {
+        melody: {type: 'string'}
+    },
+    init: function() {
+        this.colors = ['violet','aquamarine','tomato','orange','greenyellow']
+        this.musicalNotes = ['C','D','E','F','G','A','B','A#','G#']
+        this.tiles = []
+        this.level = 0
+        this.playing = false
+        var self = this
+
+        // Add start button
+        var startButton = document.createElement('a-cylinder')
+        startButton.setAttribute('rotation','-90 0 0')
+        startButton.setAttribute('position','-1 2 0')
+        startButton.setAttribute('radius','0.4')
+        startButton.setAttribute('color','green')
+        startButton.addEventListener('click', function(){
+            self.playMelody(2)
+        })
+        this.el.appendChild(startButton)
+
+
+        for(var i = 0; i < 3; i++){
+            for(var j = 0; j < 3; j++){
+                var tile = document.createElement('a-plane')
+                tile.setAttribute('color',this.getRandomColor())
+                tile.setAttribute('programaticsound',this.musicalNotes[(3*i)+j])
+                tile.setAttribute('position',i +' '+ j + ' 0')
+                tile.setAttribute('width', "0.8")
+                tile.setAttribute('height', "0.8")
+                tile.setAttribute('keytile', "")
+                this.el.appendChild(tile)
+
+                this.tiles.push(tile)
+            }
+        }
+    },
+
+    getRandomColor: function() {
+        return this.colors[Math.floor(Math.random()*this.colors.length)]
+    },
+
+    playMelody: function(level) {
+        if (!this.playing){
+            this.playing = true;
+            var self = this
+
+            var l = this.data.melody.length - 3 + level
+            var melodyTiles = []
+
+            for(var i = 0; i < l; i++){
+                var note = this.data.melody.charAt(i)
+                console.log(note)
+                var noteIdx = this.musicalNotes.indexOf(note)
+                melodyTiles.push(this.tiles[noteIdx])
+            }
+    
+            melodyTiles.forEach(function(element,index) {
+                if(element.hasLoaded){
+                    setTimeout(function(){
+                        element.components.keytile.playSound()
+                        // var ps = element.components.programaticsound
+                        // ps.playSound()
+                        if (index >= l-1){
+                            self.playing = false
+                        }
+                    },index*500)
+                }
+            });
+        }
+    },
+})
+
+AFRAME.registerComponent('keytile',{
+    schema:{},
+    init: function(){
+        var self = this
+        this.color = this.el.getAttribute('color')
+        this.el.setAttribute('color','white')
+        this.el.addEventListener('click',function(){
+            self.playSound()
+        })
+    },
+    playSound(){
+        this.el.components.programaticsound.playSound()
+        this.el.setAttribute('color',this.color)
+        var self = this
+        setTimeout(function(){
+            self.el.setAttribute('color','white')        
+
+        },500)
     }
 })
