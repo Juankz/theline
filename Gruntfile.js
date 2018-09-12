@@ -26,8 +26,9 @@ module.exports = function(grunt) {
     imagemin: {
         dist:{
             files: [{
-                'dist/tile.png': 'tile.png',
                 'dist/tile2.png': 'tile2.png',
+                'dist/arrow.png': 'arrow.png',
+                'dist/play.png': 'play.png',
                 'dist/tile3.png': 'tile3.png',
             }]
         }
