@@ -43,8 +43,6 @@ AFRAME.registerSystem('animator',{
 AFRAME.registerSystem('programaticsound',{
     schema:{
         context:{default: new AudioContext()},
-        gain: {default: '1.0'},
-        duration: {default: '0.5'},
         frequencies:{
             default: {   
                 'C': 349.2,
@@ -65,6 +63,7 @@ AFRAME.registerSystem('programaticsound',{
 
     init: function() {
         this.currentNote = 0
+        this.gain = 0.8
         this.frequenciesArray = ['C','D','E','F','G','A','B']
     },
 
@@ -77,6 +76,8 @@ AFRAME.registerSystem('programaticsound',{
         o.frequency.value = frequencies[note]
 
         var g = context.createGain() // creates gain to gracefully reduce the sound through time
+
+        g.gain.value = this.gain
 
         o.connect(g) //Connects oscillator output to gain input
 
