@@ -6,7 +6,6 @@
             <script src="components.js"></script>
         </head>
 <body> 
-    <!-- fog="type: linear; far: 25; color: #eee;" -->
     <a-scene stats background="color: #eee" light="defaultLightsEnabled: true" fog="type: linear; far: 25; color: #eee;">
         <a-assets>
             <!-- Images -->
@@ -17,6 +16,7 @@
             <a-mixin id="floor" material="src: #tile;"></a-mixin>
             <a-mixin id="teleporter" teleporter programaticsound animator material="color: #b000b0; opacity: 0"></a-mixin>
             <a-mixin id="target-cell" teleporter="targetId: powerCell;" material="color: yellow";></a-mixin>
+            <a-mixin id="target-cell-green" teleporter="targetId: powerCellGreen;" material="color: green";></a-mixin>
             <a-mixin id="teleporter-anim"
                 attribute="rotation"
                 dur="4000"
@@ -33,8 +33,10 @@
         </a-assets>
 
         <!-- camera -->
-        <!-- <a-entity id="cameraWrapper" movement="target: 0 2 0" position="0 2 0" animator="conditionAppear: none; conditionDisappear: none"> -->
-        <a-entity id="cameraWrapper" movement="target: -10 7 -145" position="-10 7 -145" animator="conditionAppear: none; conditionDisappear: none">
+        <a-entity id="cameraWrapper" movement="target: 0 2 0" position="0 2 0" animator="conditionAppear: none; conditionDisappear: none">
+        <!-- <a-entity id="cameraWrapper" movement="target: -3 10 -145" position="-10 7 -145" animator="conditionAppear: none; conditionDisappear: none"> -->
+
+        <!-- <a-entity id="cameraWrapper" movement="target: 5 7 -180" position="5 7 -180" animator="conditionAppear: none; conditionDisappear: none"> -->
             <a-entity camera="far: 35" look-controls wasd-controls>
                 <a-entity cursor="fuse: false; fuseTimeout: 1000" position="0 0 -2" geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.015" material="color: black; shader: flat;"></a-entity>
             </a-entity>
@@ -42,12 +44,12 @@
 
         <!-- floor -->
         <a-plane position="0 0 -25" material="src: #tile; repeat: 100 100;" rotation="-90 0 0" width="100" height="100"></a-plane>
-        <a-plane position="0 5 -100" material="src: #tile; repeat: 100 150;" rotation="-90 0 0" width="100" height="150"></a-plane>
+        <a-plane position="0 5 -105" material="src: #tile; repeat: 100 160;" rotation="-90 0 0" width="100" height="160"></a-plane>
         <a-plane position="0 2.5 -25" material="src: #tile; repeat: 100 5" width="100" height="5"></a-plane>
 
 
         <a-box mixin="teleporter" position="0 2 -9"></a-box> <!-- t0 -->
-        <a-box mixin="teleporter" position="1 8 -26"></a-box> <!-- t1 -->
+        <a-box mixin="teleporter" position="1 7 -26"></a-box> <!-- t1 -->
 
         <a-box animator="conditionAppear: reachedtel1;" height="5" width="2" position="-2 7 -33.5" material="src: #tile; repeat: 2 5;" opacity="0">
             <a-plane animator="conditionAppear: reachedtel1;" position="0 0.5 0.51" color="white" width="1.8" height="3.8" opacity="0">
@@ -80,14 +82,12 @@
         <a-box mixin="teleporter" animator="conditionAppear: reachedtel6" position="-3 7 -86" opacity="0"></a-box> <!-- t7 -->
         <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel5" position="4 7 -86" opacity="0"></a-box> <!-- t8 -->
         <a-box mixin="teleporter" animator="conditionAppear: reachedtel8" position="-3 7 -100" opacity="0"></a-box> <!-- t9 -->
-        <a-box mixin="teleporter" animator="conditionAppear: reachedtel9" position="-3 7 -115" opacity="0"></a-box> <!-- t9 -->
-        <a-box mixin="teleporter" animator="conditionAppear: reachedtel10" position="-3 7 -125" opacity="0"></a-box> <!-- t10 -->
-        <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel11" position="3 7 -125" opacity="0"></a-box> <!-- t11 -->
-        <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel12" position="0 7 -135" opacity="0"></a-box> <!-- t12 -->
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel9" position="-3 7 -115" opacity="0"></a-box> <!-- t10 -->
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel10" position="-3 7 -125" opacity="0"></a-box> <!-- t11 -->
+        <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel11" position="3 7 -125" opacity="0"></a-box> <!-- t12 -->
+        <a-box mixin="teleporter target-cell" animator="conditionAppear: reachedtel12" position="0 7 -135" opacity="0"></a-box> <!-- t13 -->
 
-        <a-torus position="0 7 -135" radius="2" radius-tubular="0.1" color="yellow" >
-            <a-cylinder radius="2" height="0.5" position="0 -2 0" color="yellow"></a-cylinder>
-        </a-torus>
+        <a-torus position="0 7 -135" radius="2" radius-tubular="0.1" color="yellow"></a-torus>
 
 
         <a-box material="src: #tile; repeat: 34 4; transparent: true; opacity: 0.5;" height="4" depth="34" position="1 7 -67"></a-box>
@@ -109,16 +109,84 @@
         </a-entity>
 
         <!-- Level 2 -->
-        <a-box mixin="teleporter" animator="conditionAppear: reachedtel12" position="-10 7 -145" opacity="0"></a-box> <!-- t13 -->
-        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26 7 -145" opacity="0"></a-box> <!-- t14 -->
-        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26 7 -155" opacity="0"></a-box> <!-- t15 -->
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel12" position="-10 7 -145" opacity="0"></a-box> <!-- t14 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26 7 -145" opacity="0"></a-box> <!-- t15 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26 7 -155" opacity="0"></a-box> <!-- t16 -->
 
-        <a-entity id="key" programaticsound door="melody: CDFECDG;" position="-10 7 -155"></a-entity>
-        <a-box material="src: #tile2; repeat: 4 4;" height="4" width="4" position="-32 7 -165"></a-box>
+        <a-entity programaticsound animator door="melody: CDFECDG;" position="-22.5 6 -164" rotation="0 -30 0"></a-entity> <!-- doorOpened-1 -->
+        <a-box material="src: #tile2; repeat: 4 4;" animator="conditionDisappear: doorOpened0" height="4" width="4" position="-26.5 7 -165"></a-box>
 
         <a-box material="src: #tile; repeat: 17 4;" height="4" width="17" position="-20 7 -140"></a-box>
         <a-box material="src: #tile; repeat: 13 4;" height="4" width="13" position="-18 7 -150"></a-box>
-        <a-box material="src: #tile; repeat: 15 4;" height="4" depth="15" position="-29 7 -147"></a-box>
+        <a-box material="src: #tile; repeat: 50 4;" height="4" depth="50" position="-29 7 -164.5"></a-box>
+        <a-box material="src: #tile; repeat: 30 4;" height="4" depth="14.5" position="-18.6 7 -157.5"></a-box>
+        <a-box material="src: #tile; repeat: 30 4;" height="4" depth="30" position="-24 7 -179"></a-box>
+        <a-box material="src: #tile; repeat: 13 4;" height="4" width="13" position="-18 7 -165"></a-box>
+        <a-plane position="0 30 -183" material="src: #tile; repeat: 100 50" width="100" height="50"></a-plane>
+        <a-image src="#arrow" position="-26.5 6.5 -182.9"></a-image>
+
+
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26.5 7 -168" opacity="0"></a-box> <!-- t17 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26.5 7 -180" opacity="0"></a-box> <!-- t18 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26.5 20 -180" opacity="0"></a-box> <!-- t19 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-26.5 33 -180" opacity="0"></a-box> <!-- t20 -->
+        <a-box mixin="teleporter" animator="conditionAppear: init" position="-15 33 -180" opacity="0"></a-box> <!-- t21 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: init" position="-0 40 -180" opacity="0"></a-box> <!-- t22 -->
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel22" position="0 33 -180" opacity="0"></a-box> <!-- t23 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: reachedtel23" position="4 20 -180" opacity="0"></a-box> <!-- t24 -->
+        <a-box mixin="teleporter " animator="conditionAppear: reachedtel23" position="5 20 -180" opacity="0"></a-box> <!-- t25 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: reachedtel24" position="0 7 -180" opacity="0"></a-box> <!-- t26 -->
+        <a-box mixin="teleporter " animator="conditionAppear: reachedtel24" position="5 7 -180" opacity="0"></a-box> <!-- t27 -->
+
+        <a-sphere id="powerCellGreen" animator="" movement="target: 0 33 -180; speed: 20" radius="0.5" position="-3 33 -180" color="green"></a-sphere>
+
+        <a-box material="src: #tile; repeat: 30 4;" height="4" depth="30" position="-11 7 -179"></a-box>
+        <a-box material="src: #tile; repeat: 5 4;" height="4" depth="5" position="2.26 7 -171" rotation="0 -30 0"></a-box>
+        <a-box material="src: #tile; repeat: 5 4;" height="4" depth="5" position="4.6 7 -171" rotation="0 30 0"></a-box>
+        <a-box material="src: #tile; repeat: 5 4;" height="4" depth="5" position="4.6 7 -167.4" rotation="0 -30 0"></a-box>
+        <a-box material="src: #tile; repeat: 14 4;" height="4" depth="8" position="3.425 7 -161"></a-box>
+        <a-entity position="3.425 5 -156.5">
+            <a-box material="src: #tile2;" position="0 0.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 1.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 2.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 1"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 2"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 2.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 1.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 2"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 1"></a-box>
+        </a-entity>
+        <a-entity position="3.94 5 -153" rotation="0 45 0">
+            <a-box material="src: #tile2;" position="0 0.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 1.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 2.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 0"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 1"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 2"></a-box>
+            <a-box material="src: #tile2;" position="0 3.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 2.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 1.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 3"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 2"></a-box>
+            <a-box material="src: #tile2;" position="0 0.5 1"></a-box>
+        </a-entity>
+
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel29" position="9.5 7 -169" opacity="0"></a-box> <!-- t28 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: init" position="-2.5 7 -169" opacity="0"></a-box> <!-- t29 -->
+        <a-box mixin="teleporter" animator="conditionAppear: reachedtel29" position="9 7 -155" opacity="0"></a-box> <!-- t30 -->
+
+        <a-entity programaticsound animator door="melody: AGCEGFE;" position="6.5 6 -164" rotation="0 150 0"></a-entity> <!-- doorOpened0 -->
+        <a-box material="src: #tile2; repeat: 8 4;" animator="conditionDisappear: doorOpened1" height="4" width="8" position="9 7 -160"></a-box>
+
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: reachedtel29" position="0 6.6 -155" opacity="0"></a-box> <!-- t31 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: reachedtel31" position="3.25 6.6 -149.5" opacity="0"></a-box> <!-- t32 -->
+        <a-box mixin="teleporter target-cell-green" animator="conditionAppear: reachedtel32" position="9.3 7.5 -145" opacity="0"></a-box> <!-- t33 -->
+
+        <a-torus position="9.3 7.5 -145" radius="2" radius-tubular="0.1" color="green"></a-torus>
+
 
 
 
