@@ -122,3 +122,49 @@ AFRAME.registerSystem('teleporter', {
     }
 })
 
+AFRAME.registerSystem('door',{
+    schema: {},
+    init: function(){
+        this.entities = []
+        this.setDefaultValues()
+    },
+    setDefaultValues: function(){
+        this.programedMelody = ''
+        this.playerMelody = ''
+        this.listening = false
+    },
+    registerMe: function(el) {
+        this.entities.push(el)
+    },
+
+    unregisterMe: function (el) {
+        var index = this.entities.indexOf(el);
+        this.entities.splice(index, 1);
+    },
+
+    getId: function(el){
+        return this.entities.indexOf(el); //Starts from 0
+    },
+
+    startListening: function(entity, melody){
+        this.currentDoor = entity
+        this.programedMelody = melody
+        this.listening = true
+        this.playerMelody = ''
+    },
+    registerNote: function(note){
+        console.log('note : ' + note)
+        if (this.listening){
+            this.playerMelody+=note
+            if (this.programedMelody.length == this.playerMelody.length){
+                if (this.programedMelody == this.playerMelody){
+                    this.currentDoor.components.door.open()
+                }else{
+                    this.currentDoor.components.door.keepClosed()
+                }
+                this.setDefaultValues()
+            }
+        }
+    }
+
+})

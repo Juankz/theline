@@ -125,8 +125,12 @@ AFRAME.registerComponent('animator', {
         })
 
         this.el.addEventListener('camerareachedtarget',function(ev){
-            // console.log('camerareachedtarget: '+ev.detail)
             self.system.animateNext(ev.detail)
+        })
+
+        this.el.addEventListener('doorOpened',function(ev){
+            console.log('doorOpened'+ev.detail)
+            self.system.animateNext('doorOpened'+ev.detail)
         })
 
         
@@ -186,6 +190,7 @@ AFRAME.registerComponent('door',{
         melody: {type: 'string'}
     },
     init: function() {
+        this.system.registerMe(this.el)
         this.colors = ['violet','aquamarine','tomato','orange','greenyellow']
         this.musicalNotes = ['C','D','E','F','G','A','B','A#','G#']
         this.tiles = []
@@ -196,7 +201,7 @@ AFRAME.registerComponent('door',{
         // Add start button
         var startButton = document.createElement('a-cylinder')
         startButton.setAttribute('rotation','-90 0 0')
-        startButton.setAttribute('position','-1 2 0')
+        startButton.setAttribute('position','1 3 0')
         startButton.setAttribute('radius','0.4')
         startButton.setAttribute('color','green')
         startButton.addEventListener('click', function(){
@@ -235,7 +240,6 @@ AFRAME.registerComponent('door',{
 
             for(var i = 0; i < l; i++){
                 var note = this.data.melody.charAt(i)
-                console.log(note)
                 var noteIdx = this.musicalNotes.indexOf(note)
                 melodyTiles.push(this.tiles[noteIdx])
             }
@@ -252,8 +256,17 @@ AFRAME.registerComponent('door',{
                     },index*500)
                 }
             });
+
+            self.system.startListening(self.el,this.data.melody.slice(0,l))
         }
     },
+    open: function(){
+        console.log('right , id: ' + this.system.getId(this.el))
+        this.el.emit('doorOpened',this.system.getId(this.el))
+    },
+    keepClosed: function(){
+        console.log('wrong')
+    }
 })
 
 AFRAME.registerComponent('keytile',{
@@ -264,6 +277,7 @@ AFRAME.registerComponent('keytile',{
         this.el.setAttribute('color','white')
         this.el.addEventListener('click',function(){
             self.playSound()
+            document.querySelector('a-scene').systems['door'].registerNote(self.el.components.programaticsound.data);
         })
     },
     playSound(){
