@@ -14,7 +14,7 @@ AFRAME.registerComponent('programaticsound',{
 AFRAME.registerComponent('movement',{
     schema:{
         target:{type:'vec3'},
-        speed: {type: 'number', default: 4}
+        speed: {type: 'number', default: 7}
     },
     tick: function (time, timeDelta) {
         var thisEntity = this.el
@@ -72,6 +72,7 @@ AFRAME.registerComponent('teleporter',{
                 // Adds this position to the camera target position
                 var cam = document.getElementById(self.data.targetId)
                 var p = thisEntity.getAttribute('position')
+                p = thisEntity.object3D.getWorldPosition(p)
                 AFRAME.utils.entity.setComponentProperty(cam, 'movement.target',p.x+' '+p.y+' '+p.z);
                 // cam.setAttribute('movement.target',p.x+' '+p.y+' '+p.z)
                 cam.components.movement.targetId = id
@@ -103,6 +104,15 @@ AFRAME.registerComponent('animator', {
             default: 'init'
         },
         conditionDisappear: {
+            type: 'string',
+            default: 'none'
+        },
+
+        conditionAnimate: {
+            type: 'string',
+            default: 'none'
+        },
+        animationMixins: {
             type: 'string',
             default: 'none'
         }
@@ -179,9 +189,10 @@ AFRAME.registerComponent('animator', {
         thisEntity.emit('disappeared')
     },
 
-
-    fromSystemToComponent: function() {
-        console.log('this function is called from the system')
+    animate: function(){
+        var anim = document.createElement('a-animation')
+        anim.setAttribute('mixin',this.data.animationMixins)
+        this.el.appendChild(anim)
     }
 })
 
@@ -199,15 +210,16 @@ AFRAME.registerComponent('door',{
         var self = this
 
         // Add start button
-        var startButton = document.createElement('a-cylinder')
-        startButton.setAttribute('rotation','-90 0 0')
+        var startButton = document.createElement('a-circle')
+        startButton.setAttribute('rotation','0 0 180')
         startButton.setAttribute('position','1 3 0')
         startButton.setAttribute('radius','0.4')
-        startButton.setAttribute('color','green')
+        startButton.setAttribute('src','#play')
         startButton.addEventListener('click', function(){
             self.playMelody(2)
         })
         this.el.appendChild(startButton)
+        this.startButton = startButton
 
 
         for(var i = 0; i < 3; i++){
@@ -231,6 +243,8 @@ AFRAME.registerComponent('door',{
     },
 
     playMelody: function(level) {
+        this.startButton.setAttribute('color','white')
+
         if (!this.playing){
             this.playing = true;
             var self = this
@@ -261,11 +275,12 @@ AFRAME.registerComponent('door',{
         }
     },
     open: function(){
-        console.log('right , id: ' + this.system.getId(this.el))
+        this.startButton.setAttribute('color','chartreuse')
         this.el.emit('doorOpened',this.system.getId(this.el))
+        document.querySelector('a-scene').systems['programaticsound'].playRandomSound();
     },
     keepClosed: function(){
-        console.log('wrong')
+        this.startButton.setAttribute('color','red')
     }
 })
 
@@ -280,7 +295,7 @@ AFRAME.registerComponent('keytile',{
             document.querySelector('a-scene').systems['door'].registerNote(self.el.components.programaticsound.data);
         })
     },
-    playSound(){
+    playSound: function(){
         this.el.components.programaticsound.playSound()
         this.el.setAttribute('color',this.color)
         var self = this
@@ -288,5 +303,27 @@ AFRAME.registerComponent('keytile',{
             self.el.setAttribute('color','white')        
 
         },500)
+    }
+})
+
+AFRAME.registerComponent('hole',{
+    schema:{},
+    init: function(){
+        for (var i = 0; i <= 3; i++){
+            for (var j = 0; j <= 3; j++){
+                if(i == 0 || i == 3){
+                    this.createCube(i,j)
+                }else if(j == 0 || j == 3){
+                    this.createCube(i,j)
+                }
+            }
+        }
+    },
+
+    createCube: function(y,z){
+        var cube = document.createElement('a-box');
+        cube.setAttribute('position', '0 '+ (y+0.5) + ' ' + z)
+        cube.setAttribute('src','#tile2')
+        this.el.appendChild(cube)
     }
 })

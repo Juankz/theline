@@ -30,13 +30,15 @@ module.exports = function(grunt) {
                 'dist/arrow.png': 'arrow.png',
                 'dist/play.png': 'play.png',
                 'dist/tile3.png': 'tile3.png',
+                'dist/metal.jpg': 'metal.jpg',
+                'dist/floor.png': 'floor.png',
             }]
         }
     },
     compress: {
         dist: {
             options: {
-                archive: 'balance.zip'
+                archive: 'theline.zip'
             },
             files: [
                 {src: ['dist/**'], dest: '/'}

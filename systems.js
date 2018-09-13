@@ -16,16 +16,10 @@ AFRAME.registerSystem('animator',{
         this.entities.splice(index, 1);
     },
 
-
-
-    fromComponentToSystem: function() {
-        console.log('this is a function called from a component')
-        this.entities.forEach(function(element) {
-            element.components.animator.fromSystemToComponent();
-        });
-    },
-
     animateNext: function(trigger) {
+        if (trigger == 'reachedtel59'){
+            this.changeScene()
+        }
         this.entities.forEach(function(element) {
             var animator = element.components.animator
             if(animator.data.conditionAppear == trigger){
@@ -34,8 +28,20 @@ AFRAME.registerSystem('animator',{
             if(animator.data.conditionDisappear == trigger){
                 animator.disappear()
             }
+            if(animator.data.conditionAnimate == trigger){
+                animator.animate()
+            }
         });
-    }
+    },
+
+    changeScene: function(){
+        this.treesCounter = 0
+        var self = this
+        setTimeout(function(){
+            AFRAME.utils.entity.setComponentProperty(self.sceneEl, 'background.color', '#a3e6ff');
+            AFRAME.utils.entity.setComponentProperty(self.sceneEl, 'fog.color', '#a3e6ff');
+        },3000)
+    },
 
 })
 
@@ -153,7 +159,6 @@ AFRAME.registerSystem('door',{
         this.playerMelody = ''
     },
     registerNote: function(note){
-        console.log('note : ' + note)
         if (this.listening){
             this.playerMelody+=note
             if (this.programedMelody.length == this.playerMelody.length){
