@@ -73,6 +73,12 @@
 
         <a-box mixin="teleporter" position="0 2 -9"></a-box> <!-- t0 -->
         <a-box mixin="teleporter" position="1 7 -26"></a-box> <!-- t1 -->
+
+        <a-box animator="conditionAppear: init;" height="5" width="2" position="2 2 -8" material="src: #tile; repeat: 2 5;" opacity="0">
+            <a-plane animator="conditionAppear: init;" position="0 0.5 0.51" color="white" width="1.8" height="3.8" opacity="0">
+                    <a-entity animator="conditionAppear: init;" text="align: center; width: 1.8; height: 2.8; wrapCount: 10; font: exo2bold; color: black; opacity: 0; value: Welcome. To begin please click this little purple cube" position="0 0 0.1"></a-entity>
+            </a-plane>
+        </a-box>
         
         <!-- Text -->
         <a-box animator="conditionAppear: reachedtel2;" height="5" width="2" position="-2 7 -33.5" material="src: #tile; repeat: 2 5;" opacity="0">
